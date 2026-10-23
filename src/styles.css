@@ -278,9 +278,10 @@ button.selected { color:var(--accent); border-color:var(--accent); background:va
 .player-phase { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 10px; padding:10px 14px; background:var(--accent-light); font-size:13px; }.player-phase span { color:var(--muted); }
 .player-tabs { position:sticky; top:0; z-index:2; display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:8px 14px; background:var(--bg); border-bottom:1px solid var(--line); }
 .player-tabs button[aria-pressed=true],.player-rooms button[aria-pressed=true] { background:var(--accent); color:white; border-color:var(--accent); }
-.player-app .player-unread-badge { display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; min-width:26px; min-height:26px; padding:3px 8px; border-radius:20px; background:#a33120; color:#fff; font-size:13px; font-weight:750; line-height:1.2; box-shadow:0 0 0 2px var(--paper); }
-.player-app .has-unread:not([aria-pressed=true]) { background:#fff0d4; border:2px solid #ad6415; color:#633506; font-weight:700; }
-.player-app .has-unread:not([aria-pressed=true]):hover { background:#ffe3ae; border-color:#875011; }
+.player-app .player-unread-badge { display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; min-width:26px; min-height:26px; padding:3px 8px; border-radius:20px; background:var(--accent); color:#fff; font-size:13px; font-weight:750; line-height:1.2; }
+.player-app [aria-pressed=true] .player-unread-badge { background:var(--paper); color:var(--accent); }
+.player-app .has-unread:not([aria-pressed=true]) { background:var(--accent-light); border:2px solid var(--accent); color:var(--accent); font-weight:700; }
+.player-app .has-unread:not([aria-pressed=true]):hover { background:color-mix(in srgb,var(--accent) 16%,var(--paper)); }
 .player-content { padding:14px; display:flex; flex-direction:column; gap:14px; }
 .player-card { border:1px solid var(--line); border-radius:9px; background:var(--paper); padding:16px; display:flex; flex-direction:column; gap:10px; }
 .player-card h1 { font-size:26px; font-weight:700; }.player-card h2 { font-size:18px; }.player-card p { line-height:1.5; white-space:pre-wrap; }
