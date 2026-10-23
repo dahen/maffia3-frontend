@@ -294,5 +294,6 @@ button.selected { color:var(--accent); border-color:var(--accent); background:va
 .player-response { padding:12px; border-radius:6px; background:var(--accent-light); }.player-response p { margin-top:5px; }
 .player-rooms { display:flex; flex-wrap:wrap; gap:6px; }.player-rooms button { flex:1; flex-direction:column; gap:6px; padding:9px 8px; }
 .player-messages { display:flex; flex-direction:column; gap:8px; padding-bottom:12px; }.player-messages .message { max-width:100%; }.player-messages .message p { white-space:pre-wrap; overflow-wrap:anywhere; }
-.player-compose { display:flex; flex-direction:column; gap:8px; padding-top:12px; border-top:1px solid var(--line); }
+.player-compose { display:flex; flex-direction:column; gap:8px; padding-bottom:12px; border-bottom:1px solid var(--line); }
+.player-message-order { margin:12px 0; }
 @media(max-width:480px){ body{min-width:320px;} .login-card input,.login-card button{font-size:16px;min-height:44px;} }

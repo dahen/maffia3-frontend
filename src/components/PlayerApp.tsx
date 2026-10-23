@@ -50,7 +50,7 @@ function PlayerPower({power,role,view,command,busy}:{power:PowerView;role:RoleVi
 
 function PlayerChat({view,room,active,onRefresh,onError}:{view:GameView;room:GameView['rooms'][number];active:boolean;onRefresh:()=>Promise<void>;onError:(text:string)=>void}) {
   const [messages,setMessages]=useState<Message[]>([]);const [draft,setDraft]=useState('');const [sending,setSending]=useState(false);
-  const pending=useRef<{id:string;body:string}|null>(null);const bottom=useRef<HTMLDivElement>(null);
+  const pending=useRef<{id:string;body:string}|null>(null);
   const closed=view.game.phase===3&&room.kind==='group';
   useEffect(()=>{
     if(!active)return;let cancelled=false;
@@ -58,10 +58,11 @@ function PlayerChat({view,room,active,onRefresh,onError}:{view:GameView;room:Gam
     const visible=()=>{if(document.visibilityState==='visible')void load();};
     void load();document.addEventListener('visibilitychange',visible);return()=>{cancelled=true;document.removeEventListener('visibilitychange',visible);};
   },[active,view.game.id,room.id,view.revision,room.unread]);
-  useEffect(()=>{if(active)bottom.current?.scrollIntoView({block:'nearest'});},[active,messages.length]);
   async function send(){if(sending||!draft.trim()||closed)return;setSending(true);try{if(!pending.current||pending.current.body!==draft.trim())pending.current={id:messageId(),body:draft.trim()};await request(`/games/${view.game.id}/rooms/${room.id}/messages`,'POST',{body:pending.current.body,clientId:pending.current.id});pending.current=null;setDraft('');await onRefresh();}catch(e){onError(e instanceof Error?e.message:'Kunde inte skicka.');}finally{setSending(false);}}
-  return <div hidden={!active}><div className="player-messages" aria-live="polite">{!messages.length&&<p className="player-help">Inga meddelanden ännu.</p>}{messages.map(message=><article key={message.id} className={`message ${message.admin?'from-gm':''}`}><header><strong>{message.senderName}</strong><time>Dygn {message.round} · {new Date(message.time).toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'})}</time></header><p>{message.body}</p></article>)}<div ref={bottom}/></div>
+  return <div hidden={!active}>
     {closed&&<p className="player-notice">Gruppchatten är stängd under morgonen. Du kan skriva till spelledningen.</p>}
-    <form className="player-compose" onSubmit={e=>{e.preventDefault();void send();}}><label>Meddelande<textarea rows={3} maxLength={4000} value={draft} disabled={closed||sending} onChange={e=>setDraft(e.target.value)} placeholder="Skriv till chatten…"/></label><button className="primary" disabled={closed||sending||!draft.trim()}>{sending?'Skickar…':'Skicka'}</button></form>
+    <form className="player-compose" onSubmit={e=>{e.preventDefault();void send();}}><label>Meddelande<textarea rows={2} maxLength={4000} value={draft} disabled={closed||sending} onChange={e=>setDraft(e.target.value)} placeholder="Skriv till chatten…"/></label><button className="primary" disabled={closed||sending||!draft.trim()}>{sending?'Skickar…':'Skicka'}</button></form>
+    <p className="player-help player-message-order">Senaste meddelandet först</p>
+    <div className="player-messages" aria-live="polite">{!messages.length&&<p className="player-help">Inga meddelanden ännu.</p>}{[...messages].reverse().map(message=><article key={message.id} className={`message ${message.admin?'from-gm':''}`}><header><strong>{message.senderName}</strong><time>Dygn {message.round} · {new Date(message.time).toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'})}</time></header><p>{message.body}</p></article>)}</div>
   </div>;
 }
