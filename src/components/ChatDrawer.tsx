@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { api, request } from '../api.ts';
 import type { GameView, Message } from '../api.ts';
 import { Icon } from './Icons.tsx';
+import { messageId } from '../id.ts';
 export function ChatDrawer({ view, roomId, onClose, onRoom, onRefresh, onError }: { view: GameView; roomId: string; onClose: () => void; onRoom: (id: string) => void; onRefresh: () => Promise<void>; onError: (message: string) => void }) {
   const [messages, setMessages] = useState<Message[]>([]); const [draft, setDraft] = useState(''); const [sending, setSending] = useState(false); const pending = useRef<{ id: string; body: string } | null>(null); const bottom = useRef<HTMLDivElement>(null);
   const room = view.rooms.find(r => r.id === roomId);
@@ -14,7 +15,7 @@ export function ChatDrawer({ view, roomId, onClose, onRoom, onRefresh, onError }
   useEffect(() => { bottom.current?.scrollIntoView({ block: 'end' }); }, [messages.length, roomId]);
   async function send() {
     if (!draft.trim() || sending) return; setSending(true);
-    if (!pending.current || pending.current.body !== draft.trim()) pending.current = { id: crypto.randomUUID(), body: draft.trim() };
+    if (!pending.current || pending.current.body !== draft.trim()) pending.current = { id: messageId(), body: draft.trim() };
     try { await request(`/games/${view.game.id}/rooms/${roomId}/${senderRole ? 'simulate' : 'messages'}`, 'POST', { body: pending.current.body, clientId: pending.current.id, ...(senderRole ? {roleId:senderRole} : {}) }); setDraft(''); pending.current = null; await onRefresh(); }
     catch (e) { onError(e instanceof Error ? e.message : 'Kunde inte skicka.'); } finally { setSending(false); }
   }

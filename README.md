@@ -16,7 +16,14 @@ npm run build
 
 Backend serverar sedan `dist/` direkt på port 3047. GM-tabell, simulering,
 chatt, broadcasts, historik, loggsida och separat mobil GM-morgonvy ingår.
-Spelarens mobilvy kommer senare.
+Mobil spelarvy ingår: roll/vinstvillkor, alla nattvalstyper, grupputförare,
+morgonbesked, personlig GM-chatt och gruppchatt med olästindikering.
+
+För telefon på samma wifi: bygg frontend, starta backend med `npm run start:lan`
+och öppna `http://<datorns wifi-IPv4>:3047`. Demo **Alex / 1101**. Välj samma
+parti som GM, exempelvis **Djungeln · 4 grupper, flera förmågor**.
+Servern visar lokala IPv4-adresser vid LAN-start. Windows-brandväggen behöver
+tillåta TCP 3047 för Node från lokala nätet på privat wifi. Se backend-README.
 
 Gemensamma krav, idéer och aktuell arbetsstatus:
 

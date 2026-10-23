@@ -3,6 +3,7 @@ import { api, request, PHASES, ApiError } from './api.ts';
 import type { GameView, GameSummary, User } from './api.ts';
 import { GmTable, type Command } from './components/GmTable.tsx';
 import { ChatDrawer } from './components/ChatDrawer.tsx';
+import { PlayerApp } from './components/PlayerApp.tsx';
 import { RoleDrawer } from './components/RoleDrawer.tsx';
 import { SavedField } from './components/SavedField.tsx';
 import { Icon } from './components/Icons.tsx';
@@ -61,7 +62,7 @@ export default function App() {
   async function doLogout() { await api.logout(); setPhaseGuard(null); setUser(null); setView(null); setGames([]); }
   if (checking) return <main className="loading-screen">Laddar Maffia…</main>;
   if (!user) return <Login onLogin={login} error={error}/>;
-  if (!user.admin) return <main className="login-page"><section className="login-card"><Icon name="leaf" size={30}/><h1>Hej {user.name}</h1><p>Den här första prototypen fokuserar på spelledarvyn. Spelarens mobilvy kommer i nästa steg.</p><button onClick={() => void doLogout()}>Logga ut</button></section></main>;
+  if (!user.admin) return <PlayerApp key={gameId} user={user} games={games} gameId={gameId} view={view} connection={connection} error={error} busy={busy} onGame={setGameId} command={command} onRefresh={reload} onError={setError} onLogout={doLogout}/>;
   const past = Boolean(view && view.viewedRound !== view.game.round);
   const alive = view?.roles.filter(r => r.alive) ?? []; const done = alive.filter(r => view && view.game.phase >= 2 ? r.gmFinished : r.finished).length;
   const unread = view?.rooms.reduce((sum,r) => sum + r.unread, 0) ?? 0;
@@ -96,8 +97,8 @@ export default function App() {
 }
 
 function Login({ onLogin, error }: { onLogin: (name:string,pin:string) => Promise<void>; error:string }) {
-  const [name,setName] = useState('GM'); const [pin,setPin] = useState(''); const [busy,setBusy] = useState(false);
-  return <main className="login-page" data-theme="jungle"><section className="login-card"><div className="login-mark"><Icon name="leaf" size={28}/></div><p className="eyebrow">MAFFIA · VERSION 3</p><h1>Välkommen till djungeln.</h1><p>Spelledning, spelarval och hela partiets historia på ett ställe.</p><form onSubmit={async e => { e.preventDefault(); setBusy(true); try { await onLogin(name,pin); } finally { setBusy(false); } }}><label>Namn<input name="username" autoComplete="username" value={name} onChange={e => setName(e.target.value)} required/></label><label>PIN-kod<input name="password" type="password" inputMode="numeric" autoComplete="current-password" value={pin} onChange={e => setPin(e.target.value)} required autoFocus/></label>{error && <p className="login-error" role="alert">{error}</p>}<button className="primary" disabled={busy}>{busy ? 'Loggar in…' : 'Öppna spelledningen'} <Icon name="forward" size={16}/></button></form><div className="demo-hint"><strong>Lokal prototyp</strong><span>Demoinloggning: GM · PIN 2468</span></div></section></main>;
+  const [name,setName] = useState(''); const [pin,setPin] = useState(''); const [busy,setBusy] = useState(false);
+  return <main className="login-page" data-theme="jungle"><section className="login-card"><div className="login-mark"><Icon name="leaf" size={28}/></div><p className="eyebrow">MAFFIA · VERSION 3</p><h1>Välkommen till djungeln.</h1><p>Spelledning, spelarval och hela partiets historia på ett ställe.</p><form onSubmit={async e => { e.preventDefault(); setBusy(true); try { await onLogin(name,pin); } finally { setBusy(false); } }}><label>Namn<input name="username" autoComplete="username" value={name} onChange={e => setName(e.target.value)} required/></label><label>PIN-kod<input name="password" type="password" inputMode="numeric" autoComplete="current-password" value={pin} onChange={e => setPin(e.target.value)} required/></label>{error && <p className="login-error" role="alert">{error}</p>}<button className="primary" disabled={busy}>{busy ? 'Loggar in…' : 'Logga in'} <Icon name="forward" size={16}/></button></form><div className="demo-hint"><strong>Lokal prototyp</strong><span>Demo: GM / 2468 · Spelare: Alex / 1101</span></div></section></main>;
 }
 function NewGame({ onClose, onCreated, onError }: { onClose:()=>void; onCreated:(id:string)=>Promise<void>; onError:(s:string)=>void }) {
   const [size,setSize] = useState(8); const [name,setName] = useState('Djungeln · Nytt testparti'); const [busy,setBusy] = useState(false);
