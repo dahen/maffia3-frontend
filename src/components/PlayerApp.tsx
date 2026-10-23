@@ -15,7 +15,7 @@ export function PlayerApp({user,games,gameId,view,connection,error,busy,onGame,c
     {error&&<div className="error-banner" role="alert">{error}</div>}
     {view&&role?<>
       <div className="player-phase"><strong>Dygn {view.game.round} · {PHASES[view.game.phase]}</strong><span>{!role.alive?'Du är död':view.game.phase===1?(role.finished?'Alla nattval inskickade':'Nattval återstår'):'Fasen styrs av GM'}</span></div>
-      <nav className="player-tabs" aria-label="Spelarmeny"><button aria-pressed={tab==='role'} onClick={()=>setTab('role')}>Min roll & val</button><button aria-pressed={tab==='chat'} onClick={()=>setTab('chat')}>Chatt {unread>0&&<b>{unread} olästa</b>}</button></nav>
+      <nav className="player-tabs" aria-label="Spelarmeny"><button aria-pressed={tab==='role'} onClick={()=>setTab('role')}>Min roll & val</button><button className={unread?'has-unread':''} aria-pressed={tab==='chat'} onClick={()=>setTab('chat')}>Chatt {unread>0&&<b className="player-unread-badge">{unread} {unread===1?'nytt':'nya'}</b>}</button><span className="sr-only" role="status">{unread>0?`${unread} olästa meddelanden. ${view.rooms.filter(room=>room.unread>0).map(room=>`${room.kind==='gm'?'Spelledningen':room.name}: ${room.unread}`).join('. ')}`:''}</span></nav>
       <main className="player-content" hidden={tab!=='role'}>
         <section className="player-card"><p className="eyebrow">{role.team}</p><h1>{role.name}</h1><p>{role.summary}</p><details><summary>Så vinner du</summary><p>{role.win}</p></details></section>
         {role.summoned&&<p className="player-notice">Du är inkallad till spelledningen. Kontakta GM för ditt besked.</p>}
@@ -23,7 +23,7 @@ export function PlayerApp({user,games,gameId,view,connection,error,busy,onGame,c
         {role.powers.map(power=><PlayerPower key={`${view.game.round}-${role.id}-${power.id}`} power={power} role={role} view={view} command={command} busy={busy}/>)}
       </main>
       <section className="player-content" hidden={tab!=='chat'} aria-label="Chattar">
-        <div className="player-rooms">{view.rooms.map(room=><button key={room.id} aria-pressed={(roomId||view.rooms[0]?.id)===room.id} onClick={()=>setRoomId(room.id)}>{room.kind==='gm'?'Spelledningen':room.name}{room.unread>0&&<b>{room.unread}</b>}</button>)}</div>
+        <div className="player-rooms">{view.rooms.map(room=><button key={room.id} className={room.unread?'has-unread':''} aria-pressed={(roomId||view.rooms[0]?.id)===room.id} onClick={()=>setRoomId(room.id)}><span>{room.kind==='gm'?'Spelledningen':room.name}</span>{room.unread>0&&<b className="player-unread-badge">{room.unread} {room.unread===1?'nytt':'nya'}</b>}</button>)}</div>
         {view.rooms.map(room=><PlayerChat key={room.id} view={view} room={room} active={tab==='chat'&&(roomId||view.rooms[0]?.id)===room.id} onRefresh={onRefresh} onError={onError}/>)}
       </section>
     </>:<main className="player-content"><p>{games.length?'Hämtar ditt parti…':'Inga partier är kopplade till ditt konto ännu.'}</p></main>}
