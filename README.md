@@ -19,11 +19,17 @@ chatt, broadcasts, historik, loggsida och separat mobil GM-morgonvy ingår.
 Mobil spelarvy ingår: roll/vinstvillkor, alla nattvalstyper, grupputförare,
 morgonbesked, personlig GM-chatt och gruppchatt med olästindikering.
 
+Fyra separata GM-sidor: **Rollbibliotek** med CRUD, **Partimallar**,
+**Spelare** (test/skarpt) och **Starta parti**. Mall och lista måste ha samma
+antal roller/spelare. GM granskar, byter eller slumpar om före godkännandet.
+Det finns ingen funktion för att spara roller från Spelöversikten.
+
 För telefon på samma wifi: bygg frontend, starta backend med `npm run start:lan`
-och öppna `http://<datorns wifi-IPv4>:3047`. Demo **Alex / 1101**. Välj samma
-parti som GM, exempelvis **Djungeln · 4 grupper, flera förmågor**.
-Servern visar lokala IPv4-adresser vid LAN-start. Windows-brandväggen behöver
-tillåta TCP 3047 för Node från lokala nätet på privat wifi. Se backend-README.
+och öppna `http://<datorns wifi-IPv4>:3047`. Logga in med ett konto från GM:s
+spelarlista. Testkonton får slumpade PIN som visas vid genereringen. Telefonen
+har ingen partiväljare och följer det enda Live-partiet. Före godkännande
+väntar spelaren på GM. Windows-brandväggen behöver tillåta TCP 3047 för Node
+från det lokala nätet på privat wifi. Se backend-README för hela startflödet.
 
 Gemensamma krav, idéer och aktuell arbetsstatus:
 

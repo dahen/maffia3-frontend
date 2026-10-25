@@ -16,3 +16,14 @@ liveuppdateringar och visa sparfel utan att tappa texten.
 Uppdatera de gemensamma dokumenten när arbetet förändras. Ingen deploy är beställd.
 Gör löpande commits av fungerande delsteg med tydliga meddelanden. Användaren
 har uttryckligen bett om ordentlig Git-historik och push till GitHub.
+
+Telefoner visar endast det enda Live-markerade partiet, utan partiväljare.
+Val av återanvändbara rolluppsättningar per spelarantal är nu must have;
+flera samtidiga GM-testpartier är nice to have. Live-markering och testläge
+är separata, så mobiltest behöver inte förlora historiknavigering.
+
+Mallflödet är nu preciserat: fyra separata GM-sidor för bibliotek-CRUD,
+partimallar, test-/skarpa spelarlistor och start/godkännande av rollfördelning.
+Ingen spara-roller-/spara-mall-knapp från Spelöversikten. Endast godkänd
+rollfördelning blir Live. Nollställning bevarar föregående partis historik.
+Spara/läsa in HELA speltillstånd är endast nice-to-have; import återstår.
