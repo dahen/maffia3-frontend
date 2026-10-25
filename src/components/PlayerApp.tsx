@@ -1,17 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { api, PHASES, request } from '../api.ts';
-import type { GameSummary, GameView, Message, PowerView, RoleView, User } from '../api.ts';
+import type { GameView, Message, PowerView, RoleView, User } from '../api.ts';
 import type { Command } from './GmTable.tsx';
 import { messageId } from '../id.ts';
 
-export function PlayerApp({user,games,gameId,view,connection,error,busy,onGame,command,onRefresh,onError,onLogout}:{user:User;games:GameSummary[];gameId:string;view:GameView|null;connection:string;error:string;busy:boolean;onGame:(id:string)=>void;command:Command;onRefresh:()=>Promise<void>;onError:(text:string)=>void;onLogout:()=>Promise<void>}) {
+export function PlayerApp({user,waiting,view,connection,error,busy,command,onRefresh,onError,onLogout}:{user:User;waiting:boolean;view:GameView|null;connection:string;error:string;busy:boolean;command:Command;onRefresh:()=>Promise<void>;onError:(text:string)=>void;onLogout:()=>Promise<void>}) {
   const [tab,setTab]=useState<'role'|'chat'>('role');
   const [roomId,setRoomId]=useState('');
   const role=view?.roles[0];
   const unread=view?.rooms.reduce((sum,room)=>sum+room.unread,0)??0;
   return <div className="player-app" data-theme={view?.game.theme??'jungle'}>
     <header className="player-header"><strong>MAFFIA <span>· {user.name}</span></strong><span className="connection" role="status">{connection}</span><button onClick={()=>void onLogout().catch(e=>onError(e.message))}>Logga ut</button></header>
-    <div className="player-game"><label htmlFor="player-game">Parti</label><select id="player-game" value={gameId} onChange={e=>onGame(e.target.value)}>{games.map(game=><option key={game.id} value={game.id}>{game.name}</option>)}</select></div>
     {error&&<div className="error-banner" role="alert">{error}</div>}
     {view&&role?<>
       <div className="player-phase"><strong>Dygn {view.game.round} · {PHASES[view.game.phase]}</strong><span>{!role.alive?'Du är död':view.game.phase===1?(role.finished?'Alla nattval inskickade':'Nattval återstår'):'Fasen styrs av GM'}</span></div>
@@ -26,7 +25,7 @@ export function PlayerApp({user,games,gameId,view,connection,error,busy,onGame,c
         <div className="player-rooms">{view.rooms.map(room=><button key={room.id} className={room.unread?'has-unread':''} aria-pressed={(roomId||view.rooms[0]?.id)===room.id} onClick={()=>setRoomId(room.id)}><span>{room.kind==='gm'?'Spelledningen':room.name}</span>{room.unread>0&&<b className="player-unread-badge">{room.unread} {room.unread===1?'nytt':'nya'}</b>}</button>)}</div>
         {view.rooms.map(room=><PlayerChat key={room.id} view={view} room={room} active={tab==='chat'&&(roomId||view.rooms[0]?.id)===room.id} onRefresh={onRefresh} onError={onError}/>)}
       </section>
-    </>:<main className="player-content"><p>{games.length?'Hämtar ditt parti…':'Inga partier är kopplade till ditt konto ännu.'}</p></main>}
+    </>:<main className="player-content"><p>{waiting?'Hämtar ditt parti…':'Väntar på spelledningen. Ditt parti visas här när GM markerat det som Live.'}</p></main>}
   </div>;
 }
 
