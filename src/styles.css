@@ -279,7 +279,12 @@ button.selected { color:var(--accent); border-color:var(--accent); background:va
 .player-game select { width:100%; }
 .player-app input,.player-app textarea,.player-app select { font-size:16px; min-height:44px; max-width:100%; }
 .player-phase { display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 10px; padding:10px 14px; background:var(--accent-light); font-size:13px; }.player-phase span { color:var(--muted); }
-.player-tabs { position:sticky; top:0; z-index:2; display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:8px 14px; background:var(--bg); border-bottom:1px solid var(--line); }
+.player-tabs { position:sticky; top:var(--player-countdown-height,0px); z-index:2; display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:8px 14px; background:var(--bg); border-bottom:1px solid var(--line); }
+.player-app.has-countdown { --player-countdown-height:calc(48px + env(safe-area-inset-top,0px)); }
+.player-countdown { position:sticky; top:0; z-index:3; height:var(--player-countdown-height); display:flex; align-items:center; justify-content:space-between; gap:12px; padding:8px 14px; padding-top:calc(8px + env(safe-area-inset-top,0px)); background:var(--accent); color:#fff; }
+.player-countdown>div { display:flex; flex-direction:column; gap:1px; min-width:0; }.player-countdown strong { font-size:13px; line-height:1.2; }.player-countdown small { font-size:11px; line-height:1.2; }
+.player-countdown>b { font-size:25px; line-height:1; font-variant-numeric:tabular-nums; flex-shrink:0; }.player-countdown.urgent { background:#a12d28; }.player-countdown.paused { background:var(--line); color:var(--ink); }
+.player-app.has-countdown .player-header { padding-top:10px; }
 .player-tabs button[aria-pressed=true],.player-rooms button[aria-pressed=true] { background:var(--accent); color:white; border-color:var(--accent); }
 .player-app .player-unread-badge { display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; min-width:26px; min-height:26px; padding:3px 8px; border-radius:20px; background:var(--accent); color:#fff; font-size:13px; font-weight:750; line-height:1.2; }
 .player-app [aria-pressed=true] .player-unread-badge { background:var(--paper); color:var(--accent); }

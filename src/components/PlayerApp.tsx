@@ -3,13 +3,15 @@ import { api, PHASES, request } from '../api.ts';
 import type { GameView, Message, PowerView, RoleView, User } from '../api.ts';
 import type { Command } from './GmTable.tsx';
 import { messageId } from '../id.ts';
+import { PlayerCountdown } from './PlayerCountdown.tsx';
 
 export function PlayerApp({user,waiting,view,connection,error,busy,command,onRefresh,onError,onLogout}:{user:User;waiting:boolean;view:GameView|null;connection:string;error:string;busy:boolean;command:Command;onRefresh:()=>Promise<void>;onError:(text:string)=>void;onLogout:()=>Promise<void>}) {
   const [tab,setTab]=useState<'role'|'chat'>('role');
   const [roomId,setRoomId]=useState('');
   const role=view?.roles[0];
   const unread=view?.rooms.reduce((sum,room)=>sum+room.unread,0)??0;
-  return <div className="player-app" data-theme={view?.game.theme??'jungle'}>
+  return <div className={`player-app ${view?.countdown?'has-countdown':''}`} data-theme={view?.game.theme??'jungle'}>
+    {view?.countdown&&<PlayerCountdown countdown={view.countdown}/>}
     <header className="player-header"><strong>MAFFIA <span>· {user.name}</span></strong><span className="connection" role="status">{connection}</span><button onClick={()=>void onLogout().catch(e=>onError(e.message))}>Logga ut</button></header>
     {error&&<div className="error-banner" role="alert">{error}</div>}
     {view&&role?<>
