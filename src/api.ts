@@ -12,6 +12,7 @@ export async function request<T>(path: string, method = 'GET', body?: unknown): 
 }
 export const api = {
   session: () => request<{ user: User | null }>('/session'),
+  loginPlayers: () => request<{names:string[]}>('/login/players'),
   login: (name: string, pin: string) => request<User>('/login','POST',{ name, pin }),
   logout: () => request('/logout','POST'),
   games: () => request<GameSummary[]>('/games'),

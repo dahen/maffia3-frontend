@@ -107,6 +107,22 @@ export default function App() {
 }
 
 function Login({ onLogin, error }: { onLogin: (name:string,pin:string) => Promise<void>; error:string }) {
-  const [name,setName] = useState(''); const [pin,setPin] = useState(''); const [busy,setBusy] = useState(false);
-  return <main className="login-page" data-theme="jungle"><section className="login-card"><div className="login-mark"><Icon name="leaf" size={28}/></div><p className="eyebrow">MAFFIA · VERSION 3</p><h1>Välkommen till djungeln.</h1><p>Spelledning, spelarval och hela partiets historia på ett ställe.</p><form onSubmit={async e => { e.preventDefault(); setBusy(true); try { await onLogin(name,pin); } finally { setBusy(false); } }}><label>Namn<input name="username" autoComplete="username" value={name} onChange={e => setName(e.target.value)} required/></label><label>PIN-kod<input name="password" type="password" inputMode="numeric" autoComplete="current-password" value={pin} onChange={e => setPin(e.target.value)} required/></label>{error && <p className="login-error" role="alert">{error}</p>}<button className="primary" disabled={busy}>{busy ? 'Loggar in…' : 'Logga in'} <Icon name="forward" size={16}/></button></form><div className="demo-hint"><strong>Lokal prototyp</strong><span>Demo: GM / 2468 · Spelare: Alex / 1101</span></div></section></main>;
+  const gm=window.location.pathname.replace(/\/$/,'')==='/gm';
+  const [name,setName] = useState(gm?'GM':''); const [pin,setPin] = useState(''); const [busy,setBusy] = useState(false);
+  const [names,setNames]=useState<string[]>([]);const [loading,setLoading]=useState(!gm);const [listError,setListError]=useState('');
+  useEffect(()=>{
+    if(gm)return;let cancelled=false;let inFlight=false;
+    async function load(){if(inFlight)return;inFlight=true;try{const data=await api.loginPlayers();if(cancelled)return;setNames(data.names);setName(current=>data.names.includes(current)?current:'');setListError('');}catch(e){if(!cancelled)setListError(e instanceof Error?e.message:'Kunde inte hämta namnlistan.');}finally{inFlight=false;if(!cancelled)setLoading(false);}}
+    void load();const timer=setInterval(()=>{if(document.visibilityState==='visible')void load();},10000);const visible=()=>{if(document.visibilityState==='visible')void load();};document.addEventListener('visibilitychange',visible);
+    return()=>{cancelled=true;clearInterval(timer);document.removeEventListener('visibilitychange',visible);};
+  },[gm]);
+  return <main className="login-page" data-theme="jungle"><section className="login-card"><div className="login-mark"><Icon name="leaf" size={28}/></div><p className="eyebrow">MAFFIA · {gm?'SPELLEDNING':'SPELARE'}</p><h1>{gm?'Välkommen, spelledare.':'Välkommen till djungeln.'}</h1><p>{gm?'Logga in för att förbereda och leda partiet.':'Välj ditt namn och ange din PIN-kod.'}</p>
+    <form onSubmit={async e=>{e.preventDefault();setBusy(true);try{await onLogin(name,pin);}finally{setBusy(false);}}}>
+      <label>Namn{gm?<input name="username" autoComplete="username" value={name} onChange={e=>setName(e.target.value)} required/>:<select name="username" autoComplete="username" value={name} disabled={loading||!names.length||busy} onChange={e=>{setName(e.target.value);setPin('');}} required><option value="" disabled>{loading?'Hämtar spelare…':'Välj ditt namn'}</option>{names.map(player=><option key={player} value={player}>{player}</option>)}</select>}</label>
+      {!gm&&!loading&&!listError&&!names.length&&<p className="help" role="status">Väntar på att GM startar ett parti. Namnlistan uppdateras automatiskt.</p>}
+      {listError&&<p className="login-error" role="alert">{listError} Försöker igen automatiskt.</p>}
+      <label>PIN-kod<input name="password" type="password" inputMode="numeric" autoComplete="current-password" value={pin} onChange={e=>setPin(e.target.value)} required/></label>{error&&<p className="login-error" role="alert">{error}</p>}
+      <button className="primary" disabled={busy||(!gm&&(!name||loading))}>{busy?'Loggar in…':'Logga in'} <Icon name="forward" size={16}/></button>
+    </form><div className="demo-hint">{gm?<a href="/">Till spelarinloggningen</a>:<a href="/gm">Inloggning för spelledare</a>}</div>
+  </section></main>;
 }

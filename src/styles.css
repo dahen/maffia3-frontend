@@ -223,7 +223,7 @@ button.selected { color:var(--accent); border-color:var(--accent); background:va
 .login-card > p { color:var(--muted); line-height:1.7; font-size:13px; }
 .login-card form { margin-top:28px; display:flex; flex-direction:column; gap:16px; }
 .login-card label,.new-game label { display:flex; flex-direction:column; gap:6px; font-size:12px; font-weight:600; }
-.login-card input { padding:11px 12px; }
+.login-card input,.login-card select { padding:11px 12px; width:100%; }
 .login-card .primary { padding:12px; justify-content:space-between; }
 .demo-hint { display:flex; flex-direction:column; gap:5px; padding:16px 0; margin-top:20px; border-top:1px solid #d9dfd2; color:var(--muted); font-size:11px; }
 .login-error { color:#922e28; }
@@ -324,4 +324,4 @@ button.selected { color:var(--accent); border-color:var(--accent); background:va
 .setup-confirm { padding:12px; background:var(--accent-light); border:1px solid var(--accent); border-radius:5px; margin-bottom:12px; }.setup-confirm p { margin-bottom:8px; }
 @media(max-width:1000px){.setup-start-form { grid-template-columns:1fr 1fr; }.setup-columns { grid-template-columns:minmax(0,1fr) minmax(250px,300px); }.topbar { height:auto; min-height:49px; flex-wrap:wrap; padding-top:6px; padding-bottom:6px; }.page-nav { flex-wrap:wrap; }.brand { min-width:0; }}
 @media(max-width:700px){.setup-page { padding:14px 12px; }.setup-columns { grid-template-columns:1fr; }.setup-start-form { grid-template-columns:1fr; }.setup-table th,.setup-table td { padding:6px 4px; }.setup-table { font-size:11px; }.setup-heading { flex-wrap:wrap; }}
-@media(max-width:480px){ body{min-width:320px;} .login-card input,.login-card button{font-size:16px;min-height:44px;} }
+@media(max-width:480px){ body{min-width:320px;} .login-card input,.login-card select,.login-card button{font-size:16px;min-height:44px;} }
