@@ -297,7 +297,9 @@ button.selected { color:var(--accent); border-color:var(--accent); background:va
 .player-response { padding:12px; border-radius:6px; background:var(--accent-light); }.player-response p { margin-top:5px; }
 .player-rooms { display:flex; flex-wrap:wrap; gap:6px; }.player-rooms button { flex:1; flex-direction:column; gap:6px; padding:9px 8px; }
 .player-messages { display:flex; flex-direction:column; gap:8px; padding-bottom:12px; }.player-messages .message { max-width:100%; }.player-messages .message p { white-space:pre-wrap; overflow-wrap:anywhere; }
-.player-compose { display:flex; flex-direction:column; gap:8px; padding-bottom:12px; border-bottom:1px solid var(--line); }
+.player-compose { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:end; gap:8px; padding-bottom:12px; border-bottom:1px solid var(--line); }
+.player-compose>button { min-width:76px; min-height:44px; }
+.player-compose>.player-help { grid-column:1/-1; font-size:11px; }
 .player-message-order { margin:12px 0; }
 .setup-page { flex:1; min-height:0; overflow:auto; padding:18px 22px 30px; }
 .setup-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:14px; }
