@@ -40,3 +40,15 @@ Gemensamma krav, idéer och aktuell arbetsstatus:
 
 API-typer importeras från `../maffia3-backend/src/contracts.ts`.
 De två repositories förväntas ligga som syskon i den lokala arbetsytan.
+
+
+Under Spelare kan GM öppna fristående ankomst/incheckning utan parti.
+En gemensam iPad med GM-inloggning använder `/camera`: deltagarna trycker på
+sitt namn och tar foto utan egen PIN/mobil. Tavlan visar status för alla.
+Livekamera på localhost/HTTPS, kameraväljare på wifi-HTTP. Uteblivna
+kan avaktiveras. Start kräver rätt antal aktiva och att alla är incheckade.
+Spelarens Spelare-flik visar levande med foton; målval har bildbekräftelse och
+GM har miniatyrer. Bilder hämtas via autentiserat API, inte publika filer.
+
+GM styr nedräkningen direkt i nattvyn. Spelarens sticky räknare är grön om allt
+är inskickat, annars orange/röd. Automatiska chattpåminnelser är borttagna.
