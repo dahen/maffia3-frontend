@@ -233,6 +233,7 @@ button.selected { color:var(--accent); border-color:var(--accent); background:va
 .page-nav { display:flex; gap:2px; }
 .page-nav button { border-color:transparent; background:transparent; font-size:12px; color:var(--muted); }
 .page-nav button.active { color:var(--accent); background:var(--accent-light); font-weight:650; }
+.page-nav .nav-unread-badge { display:inline-flex; align-items:center; justify-content:center; min-width:18px; padding:2px 5px; border-radius:10px; background:var(--accent); color:var(--paper); font-size:10px; font-weight:750; line-height:1.2; font-variant-numeric:tabular-nums; }
 .broadcast-form { display:flex; flex-direction:column; gap:12px; }
 .broadcast-form label,.timer-form label,.chat-simulation label { display:flex; flex-direction:column; gap:6px; font-size:11px; }
 .broadcast-form button { align-self:flex-start; }
