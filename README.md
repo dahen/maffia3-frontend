@@ -52,3 +52,8 @@ GM har miniatyrer. Bilder hämtas via autentiserat API, inte publika filer.
 
 GM styr nedräkningen direkt i nattvyn. Spelarens sticky räknare är grön om allt
 är inskickat, annars orange/röd. Automatiska chattpåminnelser är borttagna.
+
+GM har också en separat Uppdateringar-sida med installerad/ny version och
+status för uttryckligt startade uppdateringsjobb. Hosttjänsten och releaseflödet
+installeras enligt backend-repots `deploy/README.md`; lokalt utan konfiguration
+visas att tjänsten ännu inte är inkopplad. Ingen deploy sker vid git push.
