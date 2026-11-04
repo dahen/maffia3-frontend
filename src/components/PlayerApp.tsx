@@ -27,7 +27,7 @@ export function PlayerApp({user,waiting,view,connection,error,busy,command,onRef
       </main>
       <section className="player-content" hidden={tab!=='chat'} aria-label="Chattar">
         <div className="player-rooms">{view.rooms.map(room=><button key={room.id} className={room.unread?'has-unread':''} aria-pressed={(roomId||view.rooms[0]?.id)===room.id} onClick={()=>setRoomId(room.id)}><span>{room.kind==='gm'?'Spelledningen':room.name}</span>{room.unread>0&&<b className="player-unread-badge">{room.unread} {room.unread===1?'nytt':'nya'}</b>}</button>)}</div>
-        {view.rooms.map(room=><PlayerChat key={room.id} view={view} room={room} active={tab==='chat'&&(roomId||view.rooms[0]?.id)===room.id} onRefresh={onRefresh} onError={onError}/>)}
+        {view.rooms.map(room=><PlayerChat key={room.id} user={user} view={view} room={room} active={tab==='chat'&&(roomId||view.rooms[0]?.id)===room.id} onRefresh={onRefresh} onError={onError}/>)}
       </section>
       <section className="player-content" hidden={tab!=='players'}><div className="player-directory-heading"><h2>Levande spelare · {view.targets.filter(player=>player.alive).length}</h2><a href="/camera">Mitt foto / incheckning</a></div><div className="player-directory">{view.targets.filter(player=>player.alive).map(player=><figure key={player.id}><PlayerPhoto photoId={player.photoId} name={player.name}/><figcaption>{player.name}</figcaption></figure>)}</div></section>
     </>:<main className="player-content">{waiting?<p>Hämtar ditt parti…</p>:<CameraPanel user={user}/>}</main>}
@@ -55,7 +55,7 @@ function PlayerPower({power,role,view,command,busy}:{power:PowerView;role:RoleVi
   </section>;
 }
 
-function PlayerChat({view,room,active,onRefresh,onError}:{view:GameView;room:GameView['rooms'][number];active:boolean;onRefresh:()=>Promise<void>;onError:(text:string)=>void}) {
+function PlayerChat({user,view,room,active,onRefresh,onError}:{user:User;view:GameView;room:GameView['rooms'][number];active:boolean;onRefresh:()=>Promise<void>;onError:(text:string)=>void}) {
   const [messages,setMessages]=useState<Message[]>([]);const [draft,setDraft]=useState('');const [sending,setSending]=useState(false);
   const pending=useRef<{id:string;body:string}|null>(null);
   const closed=view.game.phase===3&&room.kind==='group';
@@ -70,6 +70,6 @@ function PlayerChat({view,room,active,onRefresh,onError}:{view:GameView;room:Gam
     {closed&&<p className="player-notice">Gruppchatten är stängd under morgonen. Du kan skriva till spelledningen.</p>}
     <form className="player-compose" onSubmit={e=>{e.preventDefault();void send();}}><label>Meddelande<textarea rows={2} maxLength={4000} value={draft} disabled={closed} readOnly={sending} enterKeyHint="send" aria-describedby={`chat-help-${room.id}`} onChange={e=>setDraft(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.nativeEvent.isComposing){e.preventDefault();if(!e.repeat)void send();}}} placeholder="Skriv till chatten…"/></label><button className="primary" disabled={closed||sending||!draft.trim()}>{sending?'Skickar…':'Skicka'}</button><p className="player-help" id={`chat-help-${room.id}`}>Enter skickar · Shift+Enter ger ny rad</p></form>
     <p className="player-help player-message-order">Senaste meddelandet först</p>
-    <div className="player-messages" aria-live="polite">{!messages.length&&<p className="player-help">Inga meddelanden ännu.</p>}{[...messages].reverse().map(message=><article key={message.id} className={`message ${message.admin?'from-gm':''}`}><header><strong>{message.senderName}</strong><time>Dygn {message.round} · {new Date(message.time).toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'})}</time></header><p>{message.body}</p></article>)}</div>
+    <div className="player-messages" aria-live="polite">{!messages.length&&<p className="player-help">Inga meddelanden ännu.</p>}{[...messages].reverse().map(message=>{const own=message.senderId===user.id;return <article key={message.id} className={`message ${own?'from-self':message.admin?'from-gm':''}`}><header><strong>{own?`Du · ${message.senderName}`:message.senderName}</strong><time>Dygn {message.round} · {new Date(message.time).toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'})}</time></header><p>{message.body}</p></article>;})}</div>
   </div>;
 }
