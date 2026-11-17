@@ -32,6 +32,9 @@ export function UpdatesPage({ status, error, refresh, trackJob }: ReturnType<typ
   const [confirm, setConfirm] = useState(false); const [sending, setSending] = useState(false); const [sendError, setSendError] = useState('');
   const pending = useRef<{ version: string; requestId: string } | null>(null);
   const running = activeJob(status?.job ?? null);
+  const loadedVersion: string | undefined = import.meta.env.VITE_MAFFIA_VERSION;
+  const completed = status?.job?.phase === 'complete';
+  const needsReload = Boolean(completed && loadedVersion && loadedVersion !== status.current.version);
   const available = Boolean(status?.latest && status.current.version !== status.latest.version);
   async function update() {
     if (!status?.latest || sending) return;
@@ -52,8 +55,13 @@ export function UpdatesPage({ status, error, refresh, trackJob }: ReturnType<typ
     {(error || status?.releaseError || sendError) && <p className="login-error" role="alert">{sendError || error || status?.releaseError}</p>}
     {status?.configured && !error && !status.releaseError && !status.latest && <p>Ingen publicerad appversion finns ännu.</p>}
     {status?.configured && !error && !status.releaseError && status.latest && !available && <p>Du har den senaste versionen.</p>}
-    {status?.job && <section className="update-job" aria-live="polite"><h2>{running ? `Uppdaterar till ${status.job.version}` : `Senaste uppdateringsjobb · ${status.job.version}`}</h2><p>{status.job.message}</p><time>{new Date(status.job.updatedAt).toLocaleString('sv-SE')}</time>{status.job.phase === 'complete' && <button onClick={() => window.location.reload()}>Ladda om appen</button>}</section>}
-    {available && status?.configured && !running && status.job?.phase !== 'recovery-required' && !error && !status.releaseError && <>
+    {status?.job && <section className="update-job" aria-live="polite">
+      <h2>{running ? `Uppdaterar till ${status.job.version}` : `Senaste uppdateringsjobb · ${status.job.version}`}</h2>
+      <p>{completed ? 'Uppdateringen är klar.' : status.job.message}</p>
+      <time>{new Date(status.job.updatedAt).toLocaleString('sv-SE')}</time>
+      {needsReload && <button onClick={() => window.location.reload()}>Ladda om appen</button>}
+    </section>}
+    {available && status?.configured && !running && !needsReload && status.job?.phase !== 'recovery-required' && !error && !status.releaseError && <>
       {!confirm ? <button className="primary" onClick={() => setConfirm(true)}>Uppdatera till {status.latest!.version}</button> : <section className="update-confirm"><h2>Uppdatera appen?</h2><p>Databas och foton säkerhetskopieras före bytet. Alla får ett kort avbrott när appen startar om.</p><div><button className="primary" disabled={sending} onClick={() => void update()}>{sending ? 'Startar…' : `Starta uppdatering till ${status.latest!.version}`}</button><button disabled={sending} onClick={() => setConfirm(false)}>Avbryt</button></div></section>}
     </>}
     <button className="quiet" disabled={sending} onClick={() => void refresh()}>Kontrollera status</button>
