@@ -11,6 +11,7 @@ export function PlayerApp({user,waiting,view,connection,error,busy,command,onRef
   const [tab,setTab]=useState<'role'|'chat'|'players'>('role');
   const [roomId,setRoomId]=useState('');
   const role=view?.roles[0];
+  const activeRoomId = view?.rooms.find(room => room.id === roomId)?.id ?? view?.rooms[0]?.id;
   const unread=view?.rooms.reduce((sum,room)=>sum+room.unread,0)??0;
   return <div className={`player-app ${view?.countdown?'has-countdown':''}`} data-theme={view?.game.theme??'jungle'}>
     {view?.countdown&&<PlayerCountdown countdown={view.countdown} finished={role?.finished??false}/>}
@@ -26,8 +27,8 @@ export function PlayerApp({user,waiting,view,connection,error,busy,command,onRef
         {role.powers.map(power=><PlayerPower key={`${view.game.round}-${role.id}-${power.id}`} power={power} role={role} view={view} command={command} busy={busy}/>)}
       </main>
       <section className="player-content" hidden={tab!=='chat'} aria-label="Chattar">
-        <div className="player-rooms">{view.rooms.map(room=><button key={room.id} className={room.unread?'has-unread':''} aria-pressed={(roomId||view.rooms[0]?.id)===room.id} onClick={()=>setRoomId(room.id)}><span>{room.kind==='gm'?'Spelledningen':room.name}</span>{room.unread>0&&<b className="player-unread-badge">{room.unread} {room.unread===1?'nytt':'nya'}</b>}</button>)}</div>
-        {view.rooms.map(room=><PlayerChat key={room.id} user={user} view={view} room={room} active={tab==='chat'&&(roomId||view.rooms[0]?.id)===room.id} onRefresh={onRefresh} onError={onError}/>)}
+        <div className="player-rooms">{view.rooms.map(room=><button key={room.id} className={room.unread?'has-unread':''} aria-pressed={activeRoomId===room.id} onClick={()=>setRoomId(room.id)}><span>{room.kind==='gm'?'Spelledningen':room.name}</span>{room.unread>0&&<b className="player-unread-badge">{room.unread} {room.unread===1?'nytt':'nya'}</b>}</button>)}</div>
+        {view.rooms.map(room=><PlayerChat key={room.id} user={user} view={view} room={room} active={tab==='chat'&&activeRoomId===room.id} onRefresh={onRefresh} onError={onError}/>)}
       </section>
       <section className="player-content" hidden={tab!=='players'}><div className="player-directory-heading"><h2>Levande spelare · {view.targets.filter(player=>player.alive).length}</h2><a href="/camera">Mitt foto / incheckning</a></div><div className="player-directory">{view.targets.filter(player=>player.alive).map(player=><figure key={player.id}><PlayerPhoto photoId={player.photoId} name={player.name}/><figcaption>{player.name}</figcaption></figure>)}</div></section>
     </>:<main className="player-content">{waiting?<p>Hämtar ditt parti…</p>:<CameraPanel user={user}/>}</main>}
@@ -67,6 +68,7 @@ function PlayerChat({user,view,room,active,onRefresh,onError}:{user:User;view:Ga
   },[active,view.game.id,room.id,view.revision,room.unread]);
   async function send(){if(sending||!draft.trim()||closed)return;setSending(true);try{if(!pending.current||pending.current.body!==draft.trim())pending.current={id:messageId(),body:draft.trim()};await request(`/games/${view.game.id}/rooms/${room.id}/messages`,'POST',{body:pending.current.body,clientId:pending.current.id});pending.current=null;setDraft('');await onRefresh();}catch(e){onError(e instanceof Error?e.message:'Kunde inte skicka.');}finally{setSending(false);}}
   return <div hidden={!active}>
+    {room.kind === 'chronicle' && <p className="player-help">Här kan du dokumentera vad som händer i partiet. Inläggen syns för GM och döda spelare och sparas i partiloggen.</p>}
     {closed&&<p className="player-notice">Gruppchatten är stängd under morgonen. Du kan skriva till spelledningen.</p>}
     <form className="player-compose" onSubmit={e=>{e.preventDefault();void send();}}><label>Meddelande<textarea rows={2} maxLength={4000} value={draft} disabled={closed} readOnly={sending} enterKeyHint="send" aria-describedby={`chat-help-${room.id}`} onChange={e=>setDraft(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.nativeEvent.isComposing){e.preventDefault();if(!e.repeat)void send();}}} placeholder="Skriv till chatten…"/></label><button className="primary" disabled={closed||sending||!draft.trim()}>{sending?'Skickar…':'Skicka'}</button><p className="player-help" id={`chat-help-${room.id}`}>Enter skickar · Shift+Enter ger ny rad</p></form>
     <p className="player-help player-message-order">Senaste meddelandet först</p>
